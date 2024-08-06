@@ -1,113 +1,255 @@
+"use client"
+
 import Image from "next/image";
+import React, { useState, useEffect, useRef } from 'react';
+
+
+// ...
+
+const Modal = ({ showModal, setShowModal, isModalLoading, departmentName, departmentDetails }) => {
+    const leftArrow = React.useRef(null)
+    const rightArrow = React.useRef(null)
+    const artworkGallery = useRef(null)
+
+    useEffect(() => {
+        console.log(departmentDetails)
+        if(!departmentDetails) {
+            return
+        }
+
+        leftArrow.current.addEventListener('click', function(){
+            console.log('left clicked')
+            let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
+            index = Number(index.replace('artwork-', ''))
+            document.querySelector('.artwork-gallery .active').classList.remove('active')
+
+            if(index === 0) {
+                document.querySelector('.artwork-gallery #artwork-9').classList.add('active')
+            } else {
+                document.querySelector('.artwork-gallery #artwork-' + (index - 1).toString()).classList.add('active')
+            }
+        })
+
+        rightArrow.current.addEventListener('click', function(){
+            console.log('right clicked')
+            let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
+            index = Number(index.replace('artwork-', ''))
+            document.querySelector('.artwork-gallery .active').classList.remove('active')
+
+            if(index === document.querySelector('.artwork-gallery').childElementCount - 1) {
+                document.querySelector('.artwork-gallery #artwork-0').classList.add('active')
+            } else {
+                document.querySelector('.artwork-gallery #artwork-' + (index + 1)).classList.add('active')
+            }
+        })
+
+        return () => {
+            leftArrow.current.removeEventListener('click', () => {})
+            rightArrow.current.removeEventListener('click', () => {})
+        }
+    }, [departmentDetails])
+
+    return (
+        <div className="modal" style={{display: showModal === true ? "block" : "none"}}>
+            <div className="modal-content">
+                <div className="modal-header">
+                <h3>Inside the Collection: {departmentName}</h3>
+                    <span className="close" onClick={() => setShowModal(false)}>
+                        &times;
+                    </span>
+                </div>
+                {isModalLoading ? ( // Check if loading state is true
+                    <div className="loading-screen">
+                        <div className="loading-wheel"></div>
+                    </div>
+                    ) : (
+                        <div className="modal-body">
+                            <div className="left-arrow" key="left-arrow" ref={leftArrow}>
+                                <img width="25" height="25" src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2.png" alt="external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2"/>
+                            </div>
+                            <div className="artwork-gallery">
+                                {departmentDetails && departmentDetails.map((detail, index) => (
+                                    <div className="artwork-listing" key={index} id={`artwork-${index}`}>
+                                        <h4>{detail.title}</h4>
+                                        {detail.culture !== '' && detail.objectDate !== '' ? (
+                                            <span>{detail.culture}, {detail.objectDate}</span>
+                                        ) : detail.culture !== '' ? (
+                                            <span>{detail.culture}</span>
+                                        ) : detail.objectDate !== '' ? (
+                                            <span>{detail.objectDate}</span>
+                                        ) : null}
+                                        
+                                        <br></br>
+                                        <a href={detail.objectURL} target="_blank" rel="noopener noreferrer">
+                                            <em>View on Met Museum Website</em>
+                                        </a>
+                                        <img src={detail.primaryImageSmall} alt={detail.title} width='200' height='200' />
+                                        <p>{detail.summary}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="right-arrow" key="right-arrow" ref={rightArrow}>
+                                <img width="25" height="25" src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-right-chevron-arrows-inkubators-detailed-outline-inkubators-2.png" alt="external-right-chevron-arrows-inkubators-detailed-outline-inkubators-2"/>
+                            </div>
+                        </div>
+                    )}
+            </div>
+        </div>
+    );
+};
+
+const Department = ({data, handleDepartmentClick}) => {
+    return (
+        <div className="department-listing" id={data.departmentId} onClick={() => handleDepartmentClick(data.departmentId, data.displayName)}>
+            <img src={data.primaryImage} alt={data.title} width='200' height='200' />
+            <h2>{data.displayName}</h2>
+        </div>
+    )
+}
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    const [gallery, setGallery] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [departmentName, setDepartmentName] = useState('Met Museum')
+    const [departmentDetails, setDepartmentDetails] = useState(null)
+    const [showModal, setShowModal] = useState(false)
+    const [isModalLoading, setIsModalLoading] = useState(true)
+
+    const handleDepartmentClick = async (departmentId, departmentName) => {
+        try {
+            setShowModal(true)
+            setIsModalLoading(true)
+            setDepartmentName(departmentName)
+            const departmentDetailResponse = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&departmentId=' + departmentId + '&hasImages=true&q=*')
+            if(!departmentDetailResponse.ok) {
+                throw new Error('Network response was not ok')
+            }
+            const departmentDetailData = await departmentDetailResponse.json()
+            const selectedObjects = departmentDetailData.objectIDs.slice(0,10)
+        
+            const promises = selectedObjects.map(async(objectID) => {
+                const objectResponse = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/objects/' + objectID.toString())
+
+                if(!objectResponse.ok) {
+                    throw new Error('Network response was not ok')
+                }
+
+                const objectData = await objectResponse.json()
+
+                return objectData
+            })
+
+            const results = await Promise.all(promises)
+            const resultsWithImage = results.filter(result => result.primaryImageSmall !== '')
+            setDepartmentDetails(resultsWithImage)
+            setIsModalLoading(false)
+
+            window.setTimeout(function(){
+                let firstListing = document.querySelector('.artwork-listing:first-of-type')
+                firstListing.classList.add('active')
+            }, 200)
+        } catch (error) {
+            console.error('Error fetching data:', error)
+            setIsModalLoading(false)
+        } finally {
+            console.log('Completed')
+            setIsModalLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        setIsLoading(true)
+        const fetchDepartments = async () => {
+            try {
+                const selectedDepartments = [{
+                    departmentId: 3,
+                    displayName: 'Ancient Near Eastern Art'
+                }, {
+                    departmentId: 4,
+                    displayName: 'Arms and Armor'
+                }, { 
+                    departmentId: 6,
+                    displayName: 'Asian Art'
+                }, {
+                    departmentId: 9,
+                    displayName: 'Drawings and Prints'
+                }, {
+                    departmentId: 10,
+                    displayName: 'Egyptian Art'
+                }, {
+                    departmentId: 11,
+                    displayName: 'European Paintings'
+                }, {
+                    departmentId: 13,
+                    displayName: 'Greek and Roman Art'
+                }, {
+                    departmentId: 14,
+                    displayName: 'Islamic Art'
+                },
+                {
+                    departmentId: 17,
+                    displayName: 'Medieval Art'
+                }]
+
+                const results = []
+                for (const department of selectedDepartments) {
+                    const departmentId = department.departmentId.toString()
+                    const displayName = department.displayName
+
+                    const highlightedResponse = await fetch(
+                        'https://collectionapi.metmuseum.org/public/collection/v1/search?isHighlight=true&departmentId=' + departmentId + '&hasImages=true&q=*'
+                    )
+                    if(!highlightedResponse.ok) {
+                        throw new Error('Network response was not ok')
+                    }
+                    const highlightedData = await highlightedResponse.json()
+                    const objectResponse = await fetch(
+                        'https://collectionapi.metmuseum.org/public/collection/v1/objects/' + highlightedData.objectIDs[0].toString()
+                    )
+                    if(!objectResponse.ok) {
+                        throw new Error('Network response was not ok')
+                    }
+                    const objectData = await objectResponse.json()
+                    let primaryImage = objectData.primaryImageSmall
+
+                    if(!objectData.primaryImageSmall){
+                        primaryImage = '/MetMuseum.webp'
+                    }
+
+                    results.push({
+                        departmentId: departmentId,
+                        displayName: displayName,
+                        primaryImage: primaryImage,
+                        title: objectData.title
+                    }) 
+                }
+
+                setGallery(results)
+                setIsLoading(false)
+            } catch (error) {
+                console.error('Error fetching data:', error)
+                setIsLoading(false)
+            }
+        }
+
+        fetchDepartments();
+    }, [])
+
+    return (
+        <div className="gallery">
+            {isLoading ? ( // Check if loading state is true
+                <div className="loading-screen">
+                    <div className="loading-wheel"></div>
+                    <p className="loading">Loading<span>...</span></p> 
+                </div>
+            ) : (
+                <>
+                    {gallery.map((data,index) => {
+                        return <Department key={index} data={data} handleDepartmentClick={handleDepartmentClick}/>
+                    })}
+                    <Modal showModal={showModal} setShowModal={setShowModal} departmentName={departmentName} departmentDetails={departmentDetails} isModalLoading={isModalLoading}/>
+                </>
+            )}
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    );
 }
