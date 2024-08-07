@@ -146,6 +146,10 @@ h2 {
     padding: 20px;
 }
 
+.modal-header h3 {
+    width: 90%;
+}
+
 .close {
     font-size: 30px;
     margin-right: 20px;

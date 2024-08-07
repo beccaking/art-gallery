@@ -12,31 +12,30 @@ const Modal = ({ showModal, setShowModal, isModalLoading, departmentName, depart
     const artworkGallery = useRef(null)
 
     useEffect(() => {
-        console.log(departmentDetails)
         if(!departmentDetails) {
             return
         }
 
         leftArrow.current.addEventListener('click', function(){
-            console.log('left clicked')
             let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
             index = Number(index.replace('artwork-', ''))
+            let lastIndex = document.querySelector('.artwork-gallery').childElementCount - 1
             document.querySelector('.artwork-gallery .active').classList.remove('active')
 
             if(index === 0) {
-                document.querySelector('.artwork-gallery #artwork-9').classList.add('active')
+                document.querySelector('.artwork-gallery #artwork-' + lastIndex.toString()).classList.add('active')
             } else {
-                document.querySelector('.artwork-gallery #artwork-' + (index - 1).toString()).classList.add('active')
+                document.querySelector('.artwork-gallery #artwork-' + (index - 1)).classList.add('active')
             }
         })
 
         rightArrow.current.addEventListener('click', function(){
-            console.log('right clicked')
             let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
             index = Number(index.replace('artwork-', ''))
+            let lastIndex = document.querySelector('.artwork-gallery').childElementCount - 1
             document.querySelector('.artwork-gallery .active').classList.remove('active')
 
-            if(index === document.querySelector('.artwork-gallery').childElementCount - 1) {
+            if(index === lastIndex) {
                 document.querySelector('.artwork-gallery #artwork-0').classList.add('active')
             } else {
                 document.querySelector('.artwork-gallery #artwork-' + (index + 1)).classList.add('active')
