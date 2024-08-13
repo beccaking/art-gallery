@@ -136,8 +136,9 @@ h2 {
     background: #f5f1ed;
     position: fixed;
     width: 60%;
+    max-width: 500px;
     min-height: 500px;
-    top: 0;
+    top: 20px;
 }
 
 .modal-header {
@@ -225,6 +226,7 @@ h2 {
 
 @media only screen and (max-width: 748px) {
     .modal {
+        top: 0;
         width: 100%;
     }
 }
