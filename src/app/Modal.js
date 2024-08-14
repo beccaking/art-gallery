@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Modal = ({ showModal, setShowModal, isModalLoading, departmentName, departmentDetails }) => {
+const Modal = (props) => {
     const leftArrow = React.useRef(null)
     const rightArrow = React.useRef(null)
 
     useEffect(() => {
-        if(!departmentDetails) {
+        if(!props.departmentDetails) {
             return
         }
 
@@ -39,18 +39,18 @@ const Modal = ({ showModal, setShowModal, isModalLoading, departmentName, depart
             leftArrow.current.removeEventListener('click', () => {})
             rightArrow.current.removeEventListener('click', () => {})
         }
-    }, [departmentDetails])
+    }, [props.departmentDetails])
 
     return (
-        <div className="modal" style={{display: showModal === true ? "block" : "none"}}>
+        <div className="modal" style={{display: props.showModal === true ? "block" : "none"}}>
             <div className="modal-content">
                 <div className="modal-header">
-                <h3>Inside the Collection: {departmentName}</h3>
-                    <span className="close" onClick={() => setShowModal(false)}>
+                <h3>Inside the Collection: {props.departmentName}</h3>
+                    <span className="close" onClick={() => props.setShowModal(false)}>
                         &times;
                     </span>
                 </div>
-                {isModalLoading ? ( // Check if loading state is true
+                {props.isModalLoading ? ( // Check if loading state is true
                     <div className="loading-screen">
                         <div className="loading-wheel"></div>
                     </div>
@@ -60,7 +60,7 @@ const Modal = ({ showModal, setShowModal, isModalLoading, departmentName, depart
                                 <img width="25" height="25" src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2.png" alt="external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2"/>
                             </div>
                             <div className="artwork-gallery">
-                                {departmentDetails && departmentDetails.map((detail, index) => (
+                                {props.departmentDetails && props.departmentDetails.map((detail, index) => (
                                     <div className="artwork-listing" key={index} id={`artwork-${index}`}>
                                         <h4>{detail.title}</h4>
                                         {detail.culture !== '' && detail.objectDate !== '' ? (

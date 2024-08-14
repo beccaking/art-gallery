@@ -1,8 +1,8 @@
-const Department = ({data, handleDepartmentClick}) => {
+const Department = (props) => {
     return (
-        <div className="department-listing" id={data.departmentId} onClick={() => handleDepartmentClick(data.departmentId, data.displayName)}>
-            <img src={data.primaryImage} alt={data.title} width='200' height='200' />
-            <h2>{data.displayName}</h2>
+        <div className="department-listing" id={props.data.departmentId} onClick={() => props.handleDepartmentClick(props.data.departmentId, props.data.displayName)}>
+            <img src={props.data.primaryImage} alt={props.data.title} width='200' height='200' />
+            <h2>{props.data.displayName}</h2>
         </div>
     )
 }
