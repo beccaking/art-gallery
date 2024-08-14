@@ -1,45 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 const Modal = (props) => {
-    const leftArrow = React.useRef(null)
-    const rightArrow = React.useRef(null)
 
-    useEffect(() => {
-        if(!props.departmentDetails) {
-            return
+    const prevSlide = () => {
+        let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
+        index = Number(index.replace('artwork-', ''))
+        let lastIndex = document.querySelector('.artwork-gallery').childElementCount - 1
+        document.querySelector('.artwork-gallery .active').classList.remove('active')
+
+        if(index === 0) {
+            document.querySelector('.artwork-gallery #artwork-' + lastIndex.toString()).classList.add('active')
+        } else {
+            document.querySelector('.artwork-gallery #artwork-' + (index - 1)).classList.add('active')
         }
+    }
 
-        leftArrow.current.addEventListener('click', function(){
-            let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
-            index = Number(index.replace('artwork-', ''))
-            let lastIndex = document.querySelector('.artwork-gallery').childElementCount - 1
-            document.querySelector('.artwork-gallery .active').classList.remove('active')
+    const nextSlide = () => {
+        let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
+        index = Number(index.replace('artwork-', ''))
+        let lastIndex = document.querySelector('.artwork-gallery').childElementCount - 1
+        document.querySelector('.artwork-gallery .active').classList.remove('active')
 
-            if(index === 0) {
-                document.querySelector('.artwork-gallery #artwork-' + lastIndex.toString()).classList.add('active')
-            } else {
-                document.querySelector('.artwork-gallery #artwork-' + (index - 1)).classList.add('active')
-            }
-        })
-
-        rightArrow.current.addEventListener('click', function(){
-            let index = document.querySelector('.artwork-gallery .active').getAttribute('id')
-            index = Number(index.replace('artwork-', ''))
-            let lastIndex = document.querySelector('.artwork-gallery').childElementCount - 1
-            document.querySelector('.artwork-gallery .active').classList.remove('active')
-
-            if(index === lastIndex) {
-                document.querySelector('.artwork-gallery #artwork-0').classList.add('active')
-            } else {
-                document.querySelector('.artwork-gallery #artwork-' + (index + 1)).classList.add('active')
-            }
-        })
-
-        return () => {
-            leftArrow.current.removeEventListener('click', () => {})
-            rightArrow.current.removeEventListener('click', () => {})
+        if(index === lastIndex) {
+            document.querySelector('.artwork-gallery #artwork-0').classList.add('active')
+        } else {
+            document.querySelector('.artwork-gallery #artwork-' + (index + 1)).classList.add('active')
         }
-    }, [props.departmentDetails])
+    }
 
     return (
         <div className="modal" style={{display: props.showModal === true ? "block" : "none"}}>
@@ -56,7 +43,7 @@ const Modal = (props) => {
                     </div>
                     ) : (
                         <div className="modal-body">
-                            <div className="left-arrow" key="left-arrow" ref={leftArrow}>
+                            <div className="left-arrow" key="left-arrow" onClick={prevSlide}>
                                 <img width="25" height="25" src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2.png" alt="external-left-chevron-arrows-inkubators-detailed-outline-inkubators-2"/>
                             </div>
                             <div className="artwork-gallery">
@@ -80,7 +67,7 @@ const Modal = (props) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="right-arrow" key="right-arrow" ref={rightArrow}>
+                            <div className="right-arrow" key="right-arrow" onClick={nextSlide}>
                                 <img width="25" height="25" src="https://img.icons8.com/external-inkubators-detailed-outline-inkubators/25/external-right-chevron-arrows-inkubators-detailed-outline-inkubators-2.png" alt="external-right-chevron-arrows-inkubators-detailed-outline-inkubators-2"/>
                             </div>
                         </div>
