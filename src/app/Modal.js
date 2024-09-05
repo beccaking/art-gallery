@@ -49,21 +49,29 @@ const Modal = (props) => {
                             <div className="artwork-gallery">
                                 {props.departmentDetails && props.departmentDetails.map((detail, index) => (
                                     <div className="artwork-listing" key={index} id={`artwork-${index}`}>
-                                        <h4>{detail.title}</h4>
-                                        {detail.culture !== '' && detail.objectDate !== '' ? (
-                                            <span>{detail.culture}, {detail.objectDate}</span>
-                                        ) : detail.culture !== '' ? (
-                                            <span>{detail.culture}</span>
-                                        ) : detail.objectDate !== '' ? (
-                                            <span>{detail.objectDate}</span>
-                                        ) : null}
-                                        
-                                        <br></br>
-                                        <a href={detail.objectURL} target="_blank" rel="noopener noreferrer">
-                                            <em>View on Met Museum Website</em>
-                                        </a>
-                                        <img src={detail.primaryImageSmall} alt={detail.title} width='200' height='200' />
-                                        <p>{detail.summary}</p>
+                                        <div className="upper">
+                                            <h4 className="title"><b>{detail.title}</b></h4>
+                                            {detail.culture !== '' && detail.objectDate !== '' ? (
+                                                <span><em>{detail.culture}, {detail.objectDate}</em></span>
+                                            ) : detail.culture !== '' ? (
+                                                <span><em>{detail.culture}</em></span>
+                                            ) : detail.objectDate !== '' ? (
+                                                <span><em>{detail.objectDate}</em></span>
+                                            ) : null}
+                                            <br></br>
+                                            <a href={detail.objectURL} target="_blank" rel="noopener noreferrer" className="view-online">
+                                                    View on Met Museum Website
+                                            </a>
+                                        </div>
+                                        <div className="lower">
+                                            <div className="image">
+                                                <img src={detail.primaryImageSmall} alt={detail.title} width='200' height='200' />
+                                            </div>
+                                            <div className="description">
+                                                <h4><b><em>AI Summary of Artwork Metadata</em></b></h4>
+                                                <p className="artwork-summary">{detail.summary}</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))}
                             </div>

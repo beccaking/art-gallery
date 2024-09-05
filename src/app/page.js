@@ -22,7 +22,7 @@ export default function Home() {
                 throw new Error('Network response was not ok')
             }
             const departmentDetailData = await departmentDetailResponse.json()
-            const selectedObjects = departmentDetailData.objectIDs.slice(0,10)
+            const selectedObjects = departmentDetailData.objectIDs.slice(0,5)
         
             const promises = selectedObjects.map(async(objectID) => {
                 const objectResponse = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/objects/' + objectID.toString())
@@ -38,7 +38,29 @@ export default function Home() {
 
             const results = await Promise.all(promises)
             const resultsWithImage = results.filter(result => result.primaryImageSmall !== '')
-            setDepartmentDetails(resultsWithImage)
+
+            const summaryPromises = resultsWithImage.map(async(result) => {
+                const response = await fetch('/api/getArtData', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(result)
+                })
+
+                const data = await response.json()
+                console.log(data)
+
+                return {
+                    ...result,
+                        summary: data.data.response.candidates[0].content.parts[0].text
+                }
+            })
+
+            const resultsWithSummary = await Promise.all(summaryPromises)
+            
+            setDepartmentDetails(resultsWithSummary)
+
             setIsModalLoading(false)
 
             window.setTimeout(function(){

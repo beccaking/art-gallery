@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
 body,
 html {
     background: #d6dbdc !important;
@@ -135,10 +135,10 @@ h2 {
 .modal {
     background: #f5f1ed;
     position: fixed;
-    width: 60%;
-    max-width: 500px;
+    width: 70%;
+    max-width: 800px;
     min-height: 500px;
-    top: 20px;
+    top: 90px;
 }
 
 .modal-header {
@@ -148,6 +148,7 @@ h2 {
 }
 
 .modal-header h3 {
+    font-family: 'Josefin Sans', sans-serif;
     width: 90%;
 }
 
@@ -165,7 +166,7 @@ h2 {
 
 .modal-body {
     display: flex;
-    padding: 50px;
+    padding: 20px 50px 50px;
     overflow: hidden;
     background: #fff9f0;
 }
@@ -176,26 +177,40 @@ h2 {
 }
 
 .artwork-listing {
+    width: 90%;
     margin: 0 auto;
-    width: 80%;
+}
+
+.artwork-listing .lower {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.image {
+    max-width: 45%;
 }
 
 .artwork-listing img {
     width: 100%;
 }
 
-.artwork-listing h4 {
-    font-weight: bold;
+.title {
+    font-size: 24px;
+}
+
+.view-online {
+    font-size: 14px;
+    text-decoration: underline;
 }
 
 .left-arrow,
 .right-arrow {
-    height: 50px;
-    width: 50px;
+    height: 40px;
+    width: 40px;
     top: 50%;
     background: #dfd0d07a;
     border-radius: 50%;
-    width: 50px;
     position: absolute;
     display: flex;
     justify-content: center;
@@ -224,9 +239,40 @@ h2 {
     display: block;
 }
 
+.description {
+    max-width: 50%;
+}
+
+.artwork-listing .artwork-summary {
+    display: block;
+    margin: 15px 0;
+}
+
 @media only screen and (max-width: 748px) {
     .modal {
+        position: absolute;
         top: 0;
         width: 100%;
+    }
+
+    .lower {
+        flex-direction: column;
+    }
+
+    .image,
+    .description {
+        max-width: 100%;
+    }
+
+    .left-arrow {
+        left: 10px;
+    }
+
+    .right-arrow {
+        right: 10px;
+    }
+
+    .description {
+        margin-top: 20px;
     }
 }
